@@ -24,9 +24,10 @@ module ReliableMsg #:nodoc:
             end
           }
         }.map{|queue, messages|
-          [queue, messages[0][:created]]
-        }.min {|q1, q2|
-          q1[1] <=> q2[1]
+          m = messages[0]
+          [queue, m[:priority], m[:created]]
+        }.max {|q1, q2|
+          (result = q1[1] <=> q2[1]) != 0 ? result : -(q1[2] <=> q2[2])
         }
         queue_and_created ? queue_and_created[0] : nil
       end
